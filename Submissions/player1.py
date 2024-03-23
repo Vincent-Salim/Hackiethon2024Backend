@@ -10,7 +10,7 @@ from Game.gameSettings import HP, LEFTBORDER, RIGHTBORDER, LEFTSTART, RIGHTSTART
 # SECONDARY CAN BE : Hadoken, Grenade, Boomerang, Bear Trap
 
 # TODO FOR PARTICIPANT: Set primary and secondary skill here
-PRIMARY_SKILL = DashAttackSkill
+PRIMARY_SKILL = TeleportSkill
 SECONDARY_SKILL = Grenade
 
 #constants, for easier move return
@@ -28,7 +28,6 @@ BLOCK = ("block",)
 
 PRIMARY = get_skill(PRIMARY_SKILL)
 SECONDARY = get_skill(SECONDARY_SKILL)
-CANCEL = ("skill_cancel", )
 
 # no move, aka no input
 NOMOVE = "NoMove"
@@ -45,19 +44,16 @@ class Script:
     # DO NOT TOUCH
     def init_player_skills(self):
         return self.primary, self.secondary
-    
     # MAIN FUNCTION that returns a single move to the game manager
     def get_move(self, player, enemy, player_projectiles, enemy_projectiles):
-        #if not primary_on_cooldown(player):
-         #   return PRIMARY
-        if not secondary_on_cooldown(player):
-            return SECONDARY
-        if not primary_on_cooldown(player):
-            return PRIMARY
-        
         distance = abs(get_pos(player)[0] - get_pos(enemy)[0])
-        if distance < 2:
-            return LIGHT
+        if get_last_move(enemy) == LIGHT or get_last_move(enemy) == HEAVY:
+            return BLOCK
+        if distance <= 1:
+            if not heavy_on_cooldown(player):
+                return HEAVY
+            else:
+                return LIGHT
         
         return FORWARD
         
